@@ -24,7 +24,7 @@ namespace TimesheetProcessor.Core.Dto
             return Day.ToShortDateString();
         }
 
-        public TimeSpan TimeSpent
+        public TimeSpan TotalTimeSpent
         {
             get
             {

@@ -22,9 +22,9 @@ namespace TimesheetProcessor.Core.Dto
         public TimeSpan TimeSpent { get; internal set; }
         public DayEntry Day { get; private set; }
         public TagDetails Tag { get; internal set; }
-        
+
         /// <summary>
-        /// Indicates that this time value should not be scaled or otherwise modified.
+        /// Indicates that this time value should not be scaled or otherwise modified (in some cases it might get rounded though).
         /// </summary>
         public bool Readonly { get; private set; }
 

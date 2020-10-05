@@ -50,7 +50,7 @@ namespace TimesheetProcessor.Core
                         // Skip over 'Tag 1' and 'Tag 2' column
                         var timeEntry = ValidateAndParseTimeEntry(orderedDays[i], tagDetails, csv.GetField(i + 2));
                         orderedDays[i].Entries.Add(timeEntry);
-                        tagDetails.TimeSpent.Add(timeEntry);
+                        tagDetails.Entries.Add(timeEntry);
                     }
                     sheet.Tags.Add(tagDetails);
                 }

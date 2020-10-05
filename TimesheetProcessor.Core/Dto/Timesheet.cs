@@ -24,7 +24,7 @@ namespace TimesheetProcessor.Core.Dto
                 {
                     var newTag = tagMap[entry.Tag.TagId];
                     entry.Tag = newTag;
-                    newTag.TimeSpent.Add(entry);
+                    newTag.Entries.Add(entry);
                 }
             }
         }
