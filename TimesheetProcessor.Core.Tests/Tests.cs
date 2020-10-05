@@ -136,12 +136,12 @@ namespace TimesheetProcessor.Core.Tests
             var filter = new RoundToNearestDeciHourFilter();
             timesheet = filter.Filter(timesheet);
             
-            Assert.Equal(new TimeSpan(0, 0, 0), timesheet.Days[0].Entries[0].TimeSpent);
-            Assert.Equal(new TimeSpan(0, 6, 0), timesheet.Days[0].TotalTimeSpent);
+            Assert.Equal(new TimeSpan(0, 6, 0), timesheet.Days[0].Entries[0].TimeSpent);
+            Assert.Equal(new TimeSpan(0, 12, 0), timesheet.Days[0].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 18, 0), timesheet.Days[1].TotalTimeSpent);
-            Assert.Equal(new TimeSpan(0, 0, 0), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
+            Assert.Equal(new TimeSpan(0, 36, 0), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
             
-            Assert.Equal(new TimeSpan(0, 24, 0), timesheet.TotalTimeSpent);
+            Assert.Equal(new TimeSpan(1, 0, 0), timesheet.TotalTimeSpent);
         }
         
         [Fact]
