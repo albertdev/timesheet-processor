@@ -3,6 +3,7 @@ using System.IO;
 using TimesheetProcessor.Core.Dto;
 using Xunit;
 using TimesheetProcessor.Core.Dto;
+using TimesheetProcessor.Core.Filter;
 
 namespace TimesheetProcessor.Core.Tests
 {
@@ -81,6 +82,26 @@ namespace TimesheetProcessor.Core.Tests
                 test = parser.ParseTimesheet(stream);
             }
             Assert.Equal(TimeSpan.FromHours(16), test.TotalTimeSpentWithReadonlyFlag);
+        }
+        
+        [Fact]
+        public void TestRoundUpToDeciHourFilter()
+        {
+            Timesheet test;
+            ManicTimeParser parser = new ManicTimeParser();
+            using (var stream = new StreamReader("Testfiles/Timesheet_nonpad.tsv"))
+            {
+                test = parser.ParseTimesheet(stream);
+            }
+            
+            var filter = new RoundUpToDeciHourFilter();
+            test = filter.Filter(test);
+            
+            Assert.Equal(new TimeSpan(1, 18, 0), test.Days[0].Entries[0].TimeSpent);
+            Assert.Equal(new TimeSpan(5, 54, 0), test.Days[0].TotalTimeSpent);
+            Assert.Equal(new TimeSpan(4, 36, 0), test.Tags[4].TotalTimeSpent);
+            
+            Assert.Equal(new TimeSpan(31, 24, 0), test.TotalTimeSpent);
         }
     }
 }
