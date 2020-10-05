@@ -10,6 +10,24 @@ namespace TimesheetProcessor.Core.Dto
         {
         }
 
+        protected bool Equals(DayEntry other)
+        {
+            return Day.Equals(other.Day);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((DayEntry) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Day.GetHashCode();
+        }
+
         private DayEntry(DayEntry original)
         {
             Day = original.Day;

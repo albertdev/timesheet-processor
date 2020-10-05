@@ -5,6 +5,7 @@ using TimesheetProcessor.Core.Dto;
 using Xunit;
 using TimesheetProcessor.Core.Dto;
 using TimesheetProcessor.Core.Filter;
+using TimesheetProcessor.Core.Io;
 
 namespace TimesheetProcessor.Core.Tests
 {

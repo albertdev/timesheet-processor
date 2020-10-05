@@ -6,7 +6,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using TimesheetProcessor.Core.Dto;
 
-namespace TimesheetProcessor.Core
+namespace TimesheetProcessor.Core.Io
 {
     /// <summary>
     /// This class reads a timesheet the way ManicTime generally formats it. Do mind that different settings are possible.

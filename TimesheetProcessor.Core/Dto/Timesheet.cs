@@ -29,8 +29,8 @@ namespace TimesheetProcessor.Core.Dto
             }
         }
 
-        public IList<DayEntry> Days { get; set; } = new List<DayEntry>();
-        public IList<TagDetails> Tags { get; set; } = new List<TagDetails>();
+        public IList<DayEntry> Days { get; internal set; } = new List<DayEntry>();
+        public IList<TagDetails> Tags { get; private set; } = new List<TagDetails>();
         
         public TimeSpan TotalTimeSpent {
             get {
@@ -69,6 +69,19 @@ namespace TimesheetProcessor.Core.Dto
         /// A full work week is expected to contain 39 hours. Friday is just 7 hours, Saturday and Sunday are expected to be free.
         /// </summary>
         public TimeSpan ExpectedHoursSpent => Days.Aggregate(TimeSpan.Zero, (acc, day) => acc.Add(day.ExpectedHoursSpent));
+
+        public int WeekNumber
+        {
+            get
+            {
+                if (Days == null || Days.Count < 1)
+                {
+                    throw new Exception("No days loaded in sheet");
+                }
+
+                return Days[0].Day.GetIso8601WeekOfYear();
+            }
+        }
 
         public object Clone()
         {

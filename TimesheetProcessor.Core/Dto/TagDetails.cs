@@ -21,7 +21,7 @@ namespace TimesheetProcessor.Core.Dto
         public string Notes { get; set; }
         public IList<TimeEntry> Entries { get; set; } = new List<TimeEntry>();
 
-        public string TagId => $"{Tag1}, {Tag2}";
+        public string TagId => Tag2 == null ? Tag1 : $"{Tag1}, {Tag2}";
 
         public TimeSpan TotalTimeSpent
         {
@@ -44,6 +44,11 @@ namespace TimesheetProcessor.Core.Dto
         public object Clone()
         {
             return new TagDetails(this);
+        }
+
+        public override string ToString()
+        {
+            return TagId;
         }
     }
 }
