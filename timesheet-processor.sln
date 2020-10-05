@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Core", "TimesheetProcessor.Core\TimesheetProcessor.Core.csproj", "{F9F7EB56-FC9A-4220-8EE4-489D835D14C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.Clipboard", "TimesheetProcessor.Program.Clipboard\TimesheetProcessor.Program.Clipboard.csproj", "{ACC95FA2-FE9B-4EAF-8F7C-38D922C6F84B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.ClipboardInput", "TimesheetProcessor.Program.ClipboardInput\TimesheetProcessor.Program.ClipboardInput.csproj", "{ACC95FA2-FE9B-4EAF-8F7C-38D922C6F84B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Core.Tests", "TimesheetProcessor.Core.Tests\TimesheetProcessor.Core.Tests.csproj", "{3C11A315-BE4A-4F84-9E1F-4FEE7DC5F9ED}"
 EndProject
