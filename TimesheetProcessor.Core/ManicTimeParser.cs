@@ -25,11 +25,10 @@ namespace TimesheetProcessor.Core
             using (var csv = new CsvReader(input, csvConfig))
             {
                 Timesheet sheet = new Timesheet();
-                DayEntry[] orderedDays;
                 csv.Read();
                 csv.ReadHeader();
 
-                orderedDays = ValidateAndParseDayEntries(csv);
+                var orderedDays = ValidateAndParseDayEntries(csv);
                 var numberOfDays = orderedDays.Length;
                 sheet.Days = orderedDays.ToList();
 
@@ -60,7 +59,7 @@ namespace TimesheetProcessor.Core
             }
         }
 
-        private DayEntry[] ValidateAndParseDayEntries(CsvReader csv)
+        private static DayEntry[] ValidateAndParseDayEntries(CsvReader csv)
         {
             var header = csv.Context.HeaderRecord;
             var lastHeader = header.Length - 1;
@@ -96,10 +95,16 @@ namespace TimesheetProcessor.Core
                 result[i] = entry;
             }
 
+            int weekNumber = result[0].Day.GetIso8601WeekOfYear();
+            if (result[numberOfDays - 1].Day.GetIso8601WeekOfYear() != weekNumber)
+            {
+                throw new Exception("Days in timesheet are spread over more than 1 week!");
+            }
+
             return result;
         }
 
-        private TimeEntry ValidateAndParseTimeEntry(DayEntry day, TagDetails tag, string timeSpent)
+        private static TimeEntry ValidateAndParseTimeEntry(DayEntry day, TagDetails tag, string timeSpent)
         {
             bool readOnly = false;
             if (timeSpent.StartsWith("-"))
@@ -117,13 +122,7 @@ namespace TimesheetProcessor.Core
                 throw new FormatException($"Time entry for {day} in tag {tag.TagId} is not valid: value [{timeSpent}] could not be parsed", e);
             }
 
-            return new TimeEntry
-            {
-                Day = day,
-                Tag = tag,
-                TimeSpent = timeValue,
-                Readonly = readOnly
-            };
+            return new TimeEntry(timeValue, day, tag, readOnly);
         }
     }
 }
