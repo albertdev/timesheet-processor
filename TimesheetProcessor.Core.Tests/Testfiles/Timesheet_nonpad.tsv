@@ -13,7 +13,7 @@ Make new build"
 Product Maintenance	Prod1v2	0:41:11	0:00:00	0:00:00	0:00:00	1:03:15	0:00:00	0:00:00	1:44:26	"Fix PRD-451;
 Review recent changes;
 Merge / sync branches"
-Holiday		0:00:00	-8:00:00	0:00:00	-8:00:00	0:00:00	0:00:00	0:00:00	16:00:00	Holiday
+Holiday		0:00:00	#8:00:00	0:00:00	#8:00:00	0:00:00	0:00:00	0:00:00	16:00:00	Holiday
 Product Maintenance	Prod2v1	1:40:43	0:00:00	0:00:00	0:00:00	0:00:00	0:00:00	0:00:00	1:40:43	Discuss PRD-140
 Infrastructure		0:00:00	0:00:00	0:00:00	0:00:00	1:01:30	0:00:00	0:10:17	1:11:47	Weekly IT Meeting
 Total		5:48:30	8:12:41	3:58:31	8:00:00	3:37:49	0:00:00	1:05:49	30:43:20	

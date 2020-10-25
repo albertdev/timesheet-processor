@@ -107,7 +107,7 @@ namespace TimesheetProcessor.Core.Io
         private static TimeEntry ValidateAndParseTimeEntry(DayEntry day, TagDetails tag, string timeSpent)
         {
             bool readOnly = false;
-            if (timeSpent.StartsWith("-"))
+            if (timeSpent.StartsWith("#"))
             {
                 readOnly = true;
                 timeSpent = timeSpent.Substring(1);
