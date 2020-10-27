@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using TimesheetProcessor.Core;
 using TimesheetProcessor.Core.Dto;
@@ -8,6 +9,10 @@ using TimesheetProcessor.Core.Io;
 
 namespace TimesheetProcessor.Program.ClipboardInput
 {
+    /// <summary>
+    /// This program reads a timesheet from the clipboard (in hour:minutes:second notation) and will write several processed timesheet files to the
+    /// user's Documents folder.
+    /// </summary>
     internal class Program
     {
         // Needs Single-Threaded Apartment to be able to use clipboard
@@ -16,25 +21,27 @@ namespace TimesheetProcessor.Program.ClipboardInput
         {
             var text = Clipboard.GetText();
 
-            if (text.StartsWith("Processed"))
-            {
-                Console.Error.WriteLine("Nothing to do, clipboard contains processed data");
-                Console.ReadKey();
-                return;
-            }
-            
             Timesheet sheet;
             using (var reader = new StringReader(text))
             {
                 sheet = new ManicTimeParser().ParseTimesheet(reader);
             }
-            
+
+            var outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year}-w{sheet.WeekNumber}_{DateTime.Now:M-d}_";
+
+            // Append most recent input to a file for later retrieval
+            var normalizedText = text.Replace("\r\n", "\n").Replace("\n", "\r\n");
+            File.AppendAllLines(Path.Combine(outputFolder, $"{outputFilesPrefix}inputlog.txt"), new []{"", $"Input on {DateTime.Now:s}", "", normalizedText});
+            normalizedText = null;
+            text = null;
+
             var roundedUp = new RoundToNearestDeciHourFilter().Filter(sheet);
 
             double expectedHoursToScale = (roundedUp.ExpectedHoursSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalSeconds;
             double actualHoursToScale = (roundedUp.TotalTimeSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalSeconds;
             var scalingFactor = expectedHoursToScale / actualHoursToScale;
-            
+
             // Do not scale timesheet if there's only a one-hour difference (or even overtime). By that point it's better to review things manually.
             bool shouldScale = (actualHoursToScale < (expectedHoursToScale - 1));
 
@@ -53,16 +60,12 @@ namespace TimesheetProcessor.Program.ClipboardInput
                 difference = new SubtractTimesheetFilter(sheet).Filter(result);
                 difference = new FullWeekFilter().Filter(difference);
             }
-            
+
             // Make sure timesheet contains all 7 days of the week for importing it in other time tracking tool
             result = new FullWeekFilter().Filter(result);
 
-            string resultOutput;
-            using (var writer = new StringWriter())
+            using (var writer = new StreamWriter(Path.Combine(outputFolder, $"{outputFilesPrefix}output.txt")))
             {
-                writer.WriteLine("Processed");
-                writer.Write("Week:\t");
-                writer.WriteLine(sheet.WeekNumber);
                 writer.Write("Scale factor:\t");
 
                 if (shouldScale)
@@ -77,7 +80,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
                 writer.WriteLine();
 
                 new TabBasedTimesheetWriter().WriteTimesheet(result, writer, true);
-                    
+
                 if (shouldScale)
                 {
                     // Include 'difference' timesheet for applying manual corrections in ManicTime
@@ -85,16 +88,16 @@ namespace TimesheetProcessor.Program.ClipboardInput
                     writer.WriteLine();
                     new TabBasedTimesheetWriter().WriteTimesheet(difference, writer, false);
                 }
-                writer.WriteLine();
-                writer.WriteLine();
-                // Print (potentially corrected) timesheet once more, but now in format for import in external time tracking tool
-                new ManicTimesheetWriter().WriteTimesheet(result, writer, true);
-                
+
                 writer.Flush();
-                resultOutput = writer.ToString();
             }
 
-            Clipboard.SetText(resultOutput);
+            using (var writer = new StreamWriter(Path.Combine(outputFolder, $"{outputFilesPrefix}sample.csv")))
+            {
+                // Write (potentially corrected) timesheet once more, but now in format for import in external time tracking tool
+                new ManicTimesheetWriter().WriteTimesheet(result, writer, true);
+            }
+
             Console.Out.WriteLine("Processing complete");
             Console.ReadKey();
         }
