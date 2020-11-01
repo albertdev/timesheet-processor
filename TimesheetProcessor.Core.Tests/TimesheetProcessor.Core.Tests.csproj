@@ -80,6 +80,9 @@
       <Content Include="Testfiles\Timesheet_nonpad.tsv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+      <Content Include="Testfiles\Timesheet_nonpad_missingnotes.tsv">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
       <Content Include="Testfiles\Timesheet_twoweeks.tsv">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>

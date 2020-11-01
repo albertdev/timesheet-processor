@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using CsvHelper;
 using CsvHelper.Configuration;
 using TimesheetProcessor.Core.Dto;
@@ -9,13 +10,26 @@ using TimesheetProcessor.Core.Dto;
 namespace TimesheetProcessor.Core.Io
 {
     /// <summary>
-    /// This class reads a timesheet the way ManicTime generally formats it. Do mind that different settings are possible.
+    /// This class reads a timesheet the way ManicTime sends it to the clipboard (tab-separated). Do mind that different settings are possible,
+    /// so maybe a custom ManicTime timesheet profile might need to be made to match this code.
     ///
-    /// In this case, the format is assumed to be the time format (hours:min:seconds) without rounding. No more than 1 week of data can be passed,
-    /// but less than 1 week is supported.
+    /// In this case, the format is assumed to be the time format (hours:min:seconds) without rounding. No more than 1 week of data can be passed.
+    /// On the other hand, less than 1 week is supported.
     /// </summary>
     public class ManicTimeParser
     {
+        private readonly bool _ignoreMissingNotesColumn;
+
+        /// <summary>
+        /// Only constructor to use.
+        /// </summary>
+        /// <param name="ignoreMissingNotesColumn">Optional bool defaulting to <code>false</code>. If set to true then the last 'Notes' column is allowed
+        /// to be left out of the input file. An empty notes column is never treated as an error.</param>
+        public ManicTimeParser(bool ignoreMissingNotesColumn = false)
+        {
+            _ignoreMissingNotesColumn = ignoreMissingNotesColumn;
+        }
+        
         public Timesheet ParseTimesheet(TextReader input)
         {
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -30,6 +44,7 @@ namespace TimesheetProcessor.Core.Io
 
                 var orderedDays = ValidateAndParseDayEntries(csv);
                 var numberOfDays = orderedDays.Length;
+                var hasNotes = csv.Context.HeaderRecord.Last().Equals("Notes");
                 sheet.Days = orderedDays.ToList();
 
                 while (csv.Read())
@@ -39,11 +54,11 @@ namespace TimesheetProcessor.Core.Io
                     {
                         break;
                     }
-                    var tagDetails = new TagDetails()
+                    var tagDetails = new TagDetails
                     {
                         Tag1 = csv.GetField("Tag 1"),
                         Tag2 = csv.GetField("Tag 2"),
-                        Notes = csv.GetField("Notes")
+                        Notes = hasNotes ? csv.GetField("Notes") : String.Empty
                     };
                     for (int i = 0; i < numberOfDays; i++)
                     {
@@ -59,23 +74,26 @@ namespace TimesheetProcessor.Core.Io
             }
         }
 
-        private static DayEntry[] ValidateAndParseDayEntries(CsvReader csv)
+        private DayEntry[] ValidateAndParseDayEntries(CsvReader csv)
         {
             var header = csv.Context.HeaderRecord;
             var lastHeader = header.Length - 1;
 
-            if (header.Length < 4)
+            if (header.Length < 3 || !_ignoreMissingNotesColumn && header.Length < 4)
             {
                 throw new Exception("Invalid number of columns in header");
             }
 
-            if (! "Tag 1".Equals(header[0]) || ! "Tag 2".Equals(header[1]) || ! "Notes".Equals(header[lastHeader]) || ! "Total".Equals(header[lastHeader - 1]))
+            if (! "Tag 1".Equals(header[0]) || ! "Tag 2".Equals(header[1])
+                    || _ignoreMissingNotesColumn && ! "Total".Equals(header[lastHeader])
+                    || !_ignoreMissingNotesColumn && ! "Notes".Equals(header[lastHeader]) && ! "Total".Equals(header[lastHeader - 1]))
             {
                 throw new Exception("Header row not as expected");
             }
 
-            // Ignore first two columns 'Tag 1' and 'Tag 2', then ignore last two columns 'Total' and 'Notes'
-            int numberOfDays = header.Length - 4;
+            var hasNotes = header.Last().Equals("Notes");
+            // Ignore first two columns 'Tag 1' and 'Tag 2', then ignore last two columns 'Total' and 'Notes' (if present)
+            int numberOfDays = header.Length - (hasNotes ? 4 : 3);
             var result = new DayEntry[numberOfDays];
 
             for (int i = 0; i < numberOfDays; i++)
