@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace TimesheetProcessor.Core
 {
-    internal static class DateUtil
+    public static class DateUtil
     {
         // Taken from https://stackoverflow.com/a/11155102/983949 - a CC-BY-SA 4 answer.
         // This presumes that weeks start with Monday.
