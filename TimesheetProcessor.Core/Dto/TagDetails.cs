@@ -21,7 +21,7 @@ namespace TimesheetProcessor.Core.Dto
         public string Notes { get; set; }
         public IList<TimeEntry> Entries { get; set; } = new List<TimeEntry>();
 
-        public string TagId => Tag2 == null ? Tag1 : $"{Tag1}, {Tag2}";
+        public string TagId => String.IsNullOrWhiteSpace(Tag2) ? Tag1 : $"{Tag1}, {Tag2}";
 
         public TimeSpan TotalTimeSpent
         {
