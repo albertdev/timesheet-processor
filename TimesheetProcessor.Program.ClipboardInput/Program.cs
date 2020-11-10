@@ -28,7 +28,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
             }
 
             var outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year}-w{sheet.WeekNumber}_{DateTime.Now:M-d}_";
+            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year}-w{sheet.WeekNumber}_{DateTime.Now:MM-dd}_";
 
             // Append most recent input to a file for later retrieval
             var normalizedText = text.Replace("\r\n", "\n").Replace("\n", "\r\n");
@@ -55,7 +55,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
             // Even if we don't scale we can better make sure the timesheet is rounded to 6 minute blocks
             result = new RoundToNearestDeciHourFilter().Filter(result);
 
-            if (shouldScale) 
+            if (shouldScale)
             {
                 difference = new SubtractTimesheetFilter(sheet).Filter(result);
                 difference = new FullWeekFilter().Filter(difference);
