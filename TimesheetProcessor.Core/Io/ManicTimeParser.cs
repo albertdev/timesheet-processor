@@ -29,7 +29,7 @@ namespace TimesheetProcessor.Core.Io
         {
             _ignoreMissingNotesColumn = ignoreMissingNotesColumn;
         }
-        
+
         public Timesheet ParseTimesheet(TextReader input)
         {
             var csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -47,7 +47,7 @@ namespace TimesheetProcessor.Core.Io
                 var hasNotes = csv.Context.HeaderRecord.Last().Equals("Notes");
                 sheet.Days = orderedDays.ToList();
 
-                while (csv.Read())
+                while (ReadNextLine(csv))
                 {
                     // Last row is just a totals count. We can calculate this from scratch later
                     if (csv.GetField("Tag 1").Equals("Total") && String.IsNullOrWhiteSpace(csv.GetField("Tag 2")))
@@ -71,6 +71,18 @@ namespace TimesheetProcessor.Core.Io
                 }
 
                 return sheet;
+            }
+        }
+
+        private static bool ReadNextLine(CsvReader csv)
+        {
+            try
+            {
+                return csv.Read();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Failed to parse CSV, got to line {csv.Context.Row}", e);
             }
         }
 
