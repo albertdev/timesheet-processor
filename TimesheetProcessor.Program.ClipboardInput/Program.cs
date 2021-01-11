@@ -28,7 +28,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
             }
 
             var outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year}-w{sheet.WeekNumber}_{DateTime.Now:MM-dd}_";
+            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year:0000}-w{sheet.WeekNumber:00}_{DateTime.Now:MM-dd}_";
 
             // Append most recent input to a file for later retrieval
             var normalizedText = text.Replace("\r\n", "\n").Replace("\n", "\r\n");
