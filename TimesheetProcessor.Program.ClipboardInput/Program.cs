@@ -83,10 +83,15 @@ namespace TimesheetProcessor.Program.ClipboardInput
 
                 if (shouldScale)
                 {
-                    // Include 'difference' timesheet for applying manual corrections in ManicTime
+                    // Include 'difference' timesheet to have an idea what corrections are suggested in ManicTime. Includes negative values
                     writer.WriteLine();
                     writer.WriteLine();
                     new TabBasedTimesheetWriter().WriteTimesheet(difference, writer, false);
+
+                    // Write 'difference' timesheet once more but now turn negative values into zero timespans
+                    writer.WriteLine();
+                    writer.WriteLine();
+                    new TabBasedTimesheetWriter().WriteTimesheet(new ClipToZeroFilter().Filter(difference), writer, false);
                 }
 
                 writer.Flush();
