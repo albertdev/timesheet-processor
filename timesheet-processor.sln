@@ -1,10 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Core", "TimesheetProcessor.Core\TimesheetProcessor.Core.csproj", "{F9F7EB56-FC9A-4220-8EE4-489D835D14C7}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimesheetProcessor.Core", "TimesheetProcessor.Core\TimesheetProcessor.Core.csproj", "{F9F7EB56-FC9A-4220-8EE4-489D835D14C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.ClipboardInput", "TimesheetProcessor.Program.ClipboardInput\TimesheetProcessor.Program.ClipboardInput.csproj", "{ACC95FA2-FE9B-4EAF-8F7C-38D922C6F84B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Core.Tests", "TimesheetProcessor.Core.Tests\TimesheetProcessor.Core.Tests.csproj", "{3C11A315-BE4A-4F84-9E1F-4FEE7DC5F9ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.TsvDiff", "TimesheetProcessor.Program.TsvDiff\TimesheetProcessor.Program.TsvDiff.csproj", "{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +29,15 @@ Global
 		{3C11A315-BE4A-4F84-9E1F-4FEE7DC5F9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C11A315-BE4A-4F84-9E1F-4FEE7DC5F9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C11A315-BE4A-4F84-9E1F-4FEE7DC5F9ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD81C6EB-ACC9-46D5-A396-0910F1CB459D}
 	EndGlobalSection
 EndGlobal
