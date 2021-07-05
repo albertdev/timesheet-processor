@@ -38,8 +38,8 @@ namespace TimesheetProcessor.Program.ClipboardInput
 
             var roundedUp = new RoundToNearestDeciHourFilter().Filter(sheet);
 
-            double expectedHoursToScale = (roundedUp.ExpectedHoursSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalSeconds;
-            double actualHoursToScale = (roundedUp.TotalTimeSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalSeconds;
+            double expectedHoursToScale = (roundedUp.ExpectedHoursSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
+            double actualHoursToScale = (roundedUp.TotalTimeSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
             var scalingFactor = expectedHoursToScale / actualHoursToScale;
 
             // Do not scale timesheet if there's only a one-hour difference (or even overtime). By that point it's better to review things manually.
