@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Core.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.TsvDiff", "TimesheetProcessor.Program.TsvDiff\TimesheetProcessor.Program.TsvDiff.csproj", "{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimesheetProcessor.Program.ClipboardFormat", "TimesheetProcessor.Program.ClipboardFormat\TimesheetProcessor.Program.ClipboardFormat.csproj", "{018A8FF8-2E10-4707-86DB-9A743DDCF56D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B26426DB-EEFD-4B63-A6C9-7D50CAAB5168}.Release|Any CPU.Build.0 = Release|Any CPU
+		{018A8FF8-2E10-4707-86DB-9A743DDCF56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{018A8FF8-2E10-4707-86DB-9A743DDCF56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{018A8FF8-2E10-4707-86DB-9A743DDCF56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{018A8FF8-2E10-4707-86DB-9A743DDCF56D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
