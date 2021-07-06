@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Windows;
-using TimesheetProcessor.Core;
 using TimesheetProcessor.Core.Dto;
 using TimesheetProcessor.Core.Filter;
 using TimesheetProcessor.Core.Io;
@@ -12,6 +9,7 @@ namespace TimesheetProcessor.Program.TsvDiff
 {
     /// <summary>
     /// This program reads two timesheets from input TSV file (in hour:minutes:second notation) and will write the difference to a new TSV file.
+    /// Immediately after that there's another copy but this time any negative values have been clipped to zero.
     ///
     /// Operation: Sheet 1 - Sheet 2
     ///
@@ -35,17 +33,51 @@ namespace TimesheetProcessor.Program.TsvDiff
                 throw new Exception($"Input files of form 'sheetX.tsv' not found in folder {dataFolder}");
             }
 
-            Timesheet sheet1;
-            Timesheet sheet2;
+            Timesheet sheet1 = null;
+            Timesheet sheet2 = null;
+            Exception sheet1Exception = null;
+            Exception sheet2Exception = null;
 
-            using (var reader = new StreamReader(sheet1Path, Encoding.UTF8))
+            try
             {
-                sheet1 = new ManicTimeParser().ParseTimesheet(reader);
+                using (var reader = new StreamReader(sheet1Path, Encoding.UTF8))
+                {
+                    sheet1 = new ManicTimeParser().ParseTimesheet(reader);
+                }
+            }
+            catch (Exception e)
+            {
+                sheet1Exception = e;
             }
 
-            using (var reader = new StreamReader(sheet2Path, Encoding.UTF8))
+            try
             {
-                sheet2 = new ManicTimeParser().ParseTimesheet(reader);
+                using (var reader = new StreamReader(sheet2Path, Encoding.UTF8))
+                {
+                    sheet2 = new ManicTimeParser().ParseTimesheet(reader);
+                }
+            }
+            catch (Exception e)
+            {
+                sheet2Exception = e;
+            }
+
+            if (sheet1Exception != null && sheet2Exception != null)
+            {
+                Console.Error.WriteLine($"Failed to parse both input files {sheet1Path} and {sheet2Path}");
+                Console.Error.Write("Error 1: ");
+                Console.Error.WriteLine(sheet1Exception.ToString());
+                Console.Error.Write("Error 2: ");
+                Console.Error.WriteLine(sheet2Exception.ToString());
+                Environment.Exit(1);
+            }
+            else if (sheet1Exception != null)
+            {
+                throw new Exception($"Failed to parse input file {sheet1Path}", sheet1Exception);
+            }
+            else if (sheet2Exception != null)
+            {
+                throw new Exception($"Failed to parse input file {sheet2Path}", sheet2Exception);
             }
 
             var difference = new SubtractTimesheetFilter(sheet2).Filter(sheet1);
