@@ -9,21 +9,20 @@ namespace TimesheetProcessor.Core.Filter
     /// </summary>
     public class RoundToNearestDeciHourFilter : IFilter
     {
-        private readonly bool _allowRoundToZero;
         private const long TicksPer6Minutes = TimeSpan.TicksPerMinute * 6;
         private const long RoundMedianOf6MinutesDiff = (TicksPer6Minutes / 2) - 1;
-        private bool _allowZero;
+        private readonly bool _allowZero;
 
         public RoundToNearestDeciHourFilter(bool allowRoundToZero = false)
         {
-            _allowRoundToZero = allowRoundToZero;
+            _allowZero = allowRoundToZero;
         }
-        
+
         public Timesheet Filter(Timesheet original)
         {
             // This assumes the timesheet isn't yet rounded, otherwise we're cloning for nothing
             var result = (Timesheet)original.Clone();
-            
+
             foreach (var day in result.Days)
             {
                 foreach (var entry in day.Entries)

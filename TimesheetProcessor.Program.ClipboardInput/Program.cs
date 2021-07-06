@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
-using TimesheetProcessor.Core;
 using TimesheetProcessor.Core.Dto;
 using TimesheetProcessor.Core.Filter;
 using TimesheetProcessor.Core.Io;

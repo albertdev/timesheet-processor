@@ -23,7 +23,7 @@ namespace TimesheetProcessor.Core.Tests
             Assert.Equal(9, test.Tags.Count);
             Assert.Equal(new TimeSpan(30, 43, 20), test.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestParseFullWeekWithoutNotes()
         {
@@ -59,18 +59,17 @@ namespace TimesheetProcessor.Core.Tests
             Assert.Equal(8, test.Tags.Count);
             Assert.Equal(new TimeSpan(16, 42, 9), test.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestParseFailsIfMoreThanOneWeek()
         {
-            Timesheet test;
             ManicTimeParser parser = new ManicTimeParser();
             using (var stream = new StreamReader("Testfiles/Timesheet_twoweeks.tsv"))
             {
                 Assert.Throws<Exception>(() => parser.ParseTimesheet(stream));
             }
         }
-        
+
         [Fact]
         public void TestExpectedTimeSpent()
         {
@@ -83,10 +82,10 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             Assert.Equal(TimeSpan.FromHours(39), timesheet.ExpectedHoursSpent);
         }
-        
+
         [Fact]
         public void TestExpectedTimeSpentHalfWeek()
         {
@@ -98,10 +97,10 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             Assert.Equal(TimeSpan.FromHours(8 + 8 + 7), timesheet.ExpectedHoursSpent);
         }
-        
+
         [Fact]
         public void TestReadOnlyTimeSpent()
         {
@@ -116,7 +115,7 @@ namespace TimesheetProcessor.Core.Tests
                 .ToTimesheet();
             Assert.Equal(TimeSpan.FromSeconds(2), timesheet.TotalTimeSpentWithReadonlyFlag);
         }
-        
+
         [Fact]
         public void TestRoundUpToDeciHourFilter()
         {
@@ -129,18 +128,18 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             var filter = new RoundUpToDeciHourFilter();
             timesheet = filter.Filter(timesheet);
-            
+
             Assert.Equal(new TimeSpan(0, 6, 0), timesheet.Days[0].Entries[0].TimeSpent);
             Assert.Equal(new TimeSpan(0, 12, 0), timesheet.Days[0].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 24, 0), timesheet.Days[1].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 36, 0), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
-            
+
             Assert.Equal(new TimeSpan(1, 6, 0), timesheet.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestRoundToNearestDeciHourFilter()
         {
@@ -153,18 +152,18 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             var filter = new RoundToNearestDeciHourFilter();
             timesheet = filter.Filter(timesheet);
-            
+
             Assert.Equal(new TimeSpan(0, 6, 0), timesheet.Days[0].Entries[0].TimeSpent);
             Assert.Equal(new TimeSpan(0, 12, 0), timesheet.Days[0].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 18, 0), timesheet.Days[1].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 36, 0), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
-            
+
             Assert.Equal(new TimeSpan(1, 0, 0), timesheet.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestScalingFilter()
         {
@@ -177,17 +176,17 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             timesheet = new ScaleTimesheetFilter(2).Filter(timesheet);
 
             Assert.Equal(new TimeSpan(0, 2, 2), timesheet.Days[0].Entries[0].TimeSpent);
             Assert.Equal(new TimeSpan(0, 13, 2), timesheet.Days[0].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 32, 22), timesheet.Days[1].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 2, 12), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
-            
+
             Assert.Equal(new TimeSpan(0, 45, 34), timesheet.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestSubtractionFilter()
         {
@@ -200,7 +199,7 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:6:0")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:6:0")
                 .ToTimesheet();
-            
+
             var timesheetOriginal = new Builder()
                 .Day("2020-02-03").AddEntry("admin", "0:1:1").AddEntry("building, prod1", "0:5:30")
                 .AndOnDay("2020-02-04").AddEntry("inventing", "0:7:1").AddEntry("building, prod2", "0:9:10")
@@ -210,17 +209,17 @@ namespace TimesheetProcessor.Core.Tests
                 .AndOnDay("2020-02-08").AddEntry("admin", "0:0:1")
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
-            
+
             timesheet = new SubtractTimesheetFilter(timesheetOriginal).Filter(timesheet);
 
             Assert.Equal(new TimeSpan(0, 4, 59), timesheet.Days[0].Entries[0].TimeSpent);
             Assert.Equal(new TimeSpan(0, 5, 29), timesheet.Days[0].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 7, 49), timesheet.Days[1].TotalTimeSpent);
             Assert.Equal(new TimeSpan(0, 34, 54), timesheet.Tags.First(x => x.TagId == "admin").TotalTimeSpent);
-            
+
             Assert.Equal(new TimeSpan(0, 43, 13), timesheet.TotalTimeSpent);
         }
-        
+
         [Fact]
         public void TestTabBasedSheetWriter()
         {
@@ -240,7 +239,7 @@ namespace TimesheetProcessor.Core.Tests
                 new TabBasedTimesheetWriter().WriteTimesheet(timesheet, writer, true);
                 result = writer.ToString();
             }
-            
+
             Assert.Contains("Total", result);
             // Check that total hours are properly output
             Assert.Contains("\t'36:26:41", result);
