@@ -20,22 +20,21 @@ namespace TimesheetProcessor.Program.ClipboardInput
         {
             var text = Clipboard.GetText();
 
-            Timesheet sheet;
+            Timesheet inputSheet;
             using (var reader = new StringReader(text))
             {
-                sheet = new ManicTimeParser().ParseTimesheet(reader);
+                inputSheet = new ManicTimeParser().ParseTimesheet(reader);
             }
 
             var outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Planning");
-            var outputFilesPrefix = $"ManicTime_Timesheet_{sheet.Days.First().Day.Year:0000}-w{sheet.WeekNumber:00}_{DateTime.Now:MM-dd}_";
+            var outputFilesPrefix = $"ManicTime_Timesheet_{inputSheet.Days.First().Day.Year:0000}-w{inputSheet.WeekNumber:00}_{DateTime.Now:MM-dd}_";
 
-            // Append most recent input to a file for later retrieval
-            var normalizedText = text.Replace("\r\n", "\n").Replace("\n", "\r\n");
-            File.AppendAllLines(Path.Combine(outputFolder, $"{outputFilesPrefix}inputlog.txt"), new []{"", $"Input on {DateTime.Now:s}", "", normalizedText});
-            normalizedText = null;
-            text = null;
+            BackupMostRecentInput(outputFolder, outputFilesPrefix, text);
 
-            var roundedUp = new RoundToNearestDeciHourFilter().Filter(sheet);
+            // First distribute the "Elastic" time code across every writable entry in the sheet. This will form the basis of the result.
+            var workingSheet = new ElasticFilter().Filter(inputSheet);
+
+            var roundedUp = new RoundToNearestDeciHourFilter().Filter(workingSheet);
 
             double expectedHoursToScale = (roundedUp.ExpectedHoursSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
             double actualHoursToScale = (roundedUp.TotalTimeSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
@@ -44,11 +43,11 @@ namespace TimesheetProcessor.Program.ClipboardInput
             // Do not scale timesheet if there's only a one-hour difference (or even overtime). By that point it's better to review things manually.
             bool shouldScale = (actualHoursToScale < (expectedHoursToScale - 1));
 
-            Timesheet result = sheet;
+            Timesheet result = workingSheet;
             Timesheet difference = null;
             if (shouldScale)
             {
-                result = new ScaleTimesheetFilter(scalingFactor).Filter(sheet);
+                result = new ScaleTimesheetFilter(scalingFactor).Filter(workingSheet);
             }
 
             // Even if we don't scale we can better make sure the timesheet is rounded to 6 minute blocks
@@ -56,7 +55,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
 
             if (shouldScale)
             {
-                difference = new SubtractTimesheetFilter(sheet).Filter(result);
+                difference = new SubtractTimesheetFilter(inputSheet).Filter(result);
                 difference = new FullWeekFilter().Filter(difference);
             }
 
@@ -104,6 +103,13 @@ namespace TimesheetProcessor.Program.ClipboardInput
 
             Console.Out.WriteLine("Processing complete");
             Console.ReadKey();
+        }
+
+        private static void BackupMostRecentInput(string outputFolder, string outputFilesPrefix, string inputSheetText)
+        {
+            var outputFile = Path.Combine(outputFolder, $"{outputFilesPrefix}inputlog.txt");
+            var normalizedText = inputSheetText.Replace("\r\n", "\n").Replace("\n", "\r\n");
+            File.AppendAllLines(outputFile, new[] {"", $"Input on {DateTime.Now:s}", "", normalizedText});
         }
     }
 }
