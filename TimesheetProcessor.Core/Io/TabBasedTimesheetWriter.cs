@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using TimesheetProcessor.Core.Dto;
 
@@ -35,7 +36,7 @@ namespace TimesheetProcessor.Core.Io
             {
                 return duration.Duration().ToString("\\'\\-h\\:mm\\:ss");
             }
-            return duration.ToString("h\\:mm\\:ss");
+            return duration.ToString("h\\:mm\\:ss", CultureInfo.InvariantCulture);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using CsvHelper.Configuration;
 using TimesheetProcessor.Core.Dto;
@@ -28,11 +29,11 @@ namespace TimesheetProcessor.Core.Io
             // Always quote, no exceptions
             config.ShouldQuote = (s, context) => true;
         }
-        
+
         private string ConvertTime(TimeSpan duration)
         {
             var hours = Math.Round(duration.TotalHours, 2, MidpointRounding.ToEven);
-            return hours.ToString("0.00");
+            return hours.ToString("0.00", CultureInfo.InvariantCulture);
         }
     }
 }
