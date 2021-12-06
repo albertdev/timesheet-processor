@@ -16,19 +16,25 @@ namespace TimesheetProcessor.Core.Filter
         {
             _subtractedSheet = subtractedSheet;
         }
-        
+
         public Timesheet Filter(Timesheet original)
         {
             var result = (Timesheet)original.Clone();
-            
-            foreach (var day in result.Days)
+
+            foreach (var subtractedDay in _subtractedSheet.Days)
             {
-                var subtractedDay = _subtractedSheet.Days.FirstOrDefault(x => x.Day == day.Day) ?? throw new Exception($"Day {day} not found");
-                foreach (var entry in day.Entries)
+                var day = result.Days.FirstOrDefault(x => x.Day == subtractedDay.Day) ?? throw new Exception($"Day {subtractedDay} not found");
+
+                foreach (var subtractedEntry in subtractedDay.Entries)
                 {
-                    var subtractedEntry = subtractedDay.Entries.FirstOrDefault(x => x.Tag.TagId == entry.Tag.TagId)
-                                          ?? throw new Exception($"{day} is missing entry {entry.Tag.TagId}");
-                    
+                    // Special case: Ignore the elastic time, it should get absorbed in other entries
+                    if (subtractedEntry.Tag.TagId.Equals(ElasticFilter.ElasticTagName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        continue;
+                    }
+                    var entry = day.Entries.FirstOrDefault(x => x.Tag.TagId == subtractedEntry.Tag.TagId)
+                                          ?? throw new Exception($"{day} is missing entry {subtractedEntry.Tag.TagId}");
+
                     long ticks = entry.TimeSpent.Ticks - subtractedEntry.TimeSpent.Ticks;
                     entry.TimeSpent = new TimeSpan(ticks);
                 }

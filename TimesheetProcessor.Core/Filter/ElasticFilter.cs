@@ -10,10 +10,12 @@ namespace TimesheetProcessor.Core.Filter
     /// </summary>
     public class ElasticFilter : IFilter
     {
+        public const string ElasticTagName = "Elastic";
+
         public Timesheet Filter(Timesheet original)
         {
             var elasticTagIndex = original.Tags.Select((details, index) => (details, index))
-                .Where(x => x.details.Tag1.Equals("Elastic", StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => x.details.Tag1.Equals(ElasticTagName, StringComparison.InvariantCultureIgnoreCase))
                 .Select(x => x.index)
                 .DefaultIfEmpty(-1)
                 .First();
@@ -28,7 +30,7 @@ namespace TimesheetProcessor.Core.Filter
             foreach (var day in result.Days)
             {
                 var elasticEntryIndexes = day.Entries.Select((entry, index) => (entry, index))
-                    .Where(x => x.entry.Tag.Tag1.Equals("Elastic", StringComparison.InvariantCultureIgnoreCase))
+                    .Where(x => x.entry.Tag.Tag1.Equals(ElasticTagName, StringComparison.InvariantCultureIgnoreCase))
                     .Select(x => x.index)
                     .ToList();
 
