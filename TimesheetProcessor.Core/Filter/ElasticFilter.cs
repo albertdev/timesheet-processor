@@ -53,7 +53,7 @@ namespace TimesheetProcessor.Core.Filter
 
                 if (totalWriteableTicks == 0)
                 {
-                    throw new Exception("Elastic entry found but no writeable entries to distribute it to.");
+                    throw new Exception($"Elastic entry found on {day} but no writeable entries to distribute it to.");
                 }
 
                 foreach (var entry in day.Entries)

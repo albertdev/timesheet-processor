@@ -19,11 +19,19 @@ namespace TimesheetProcessor.Program.ClipboardFormat
         public static void Main(string[] args)
         {
             var text = Clipboard.GetText();
+            bool deciHour = args.Any(x => x.Equals("--decimalHour", StringComparison.InvariantCultureIgnoreCase));
 
             Timesheet sheet;
             using (var reader = new StringReader(text))
             {
-                sheet = new ManicTimeParser().ParseTimesheet(reader);
+                if (deciHour)
+                {
+                    sheet = new ManicTimeParser().ParseTimesheet(reader);
+                }
+                else
+                {
+                    sheet = new ManicTimeParser().ParseTimesheet(reader);
+                }
             }
 
             Timesheet result = sheet;
