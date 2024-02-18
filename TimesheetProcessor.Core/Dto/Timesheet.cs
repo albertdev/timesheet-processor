@@ -66,7 +66,7 @@ namespace TimesheetProcessor.Core.Dto
         }
 
         /// <summary>
-        /// A full work week is expected to contain 39 hours. Friday is just 7 hours, Saturday and Sunday are expected to be free.
+        /// Calculate how many hours there should be in this collection of work days. Saturday and Sunday are always expected to be zero.
         /// </summary>
         public TimeSpan ExpectedHoursSpent => Days.Aggregate(TimeSpan.Zero, (acc, day) => acc.Add(day.ExpectedHoursSpent));
 

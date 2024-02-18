@@ -18,7 +18,7 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
 
-            Assert.Equal(TimeSpan.FromHours(39), timesheet.ExpectedHoursSpent);
+            Assert.Equal(TimeSpan.FromHours(40), timesheet.ExpectedHoursSpent);
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
                 .AndOnDay("2020-02-09").AddEntry("admin", "0:0:1")
                 .ToTimesheet();
 
-            Assert.Equal(TimeSpan.FromHours(8 + 8 + 7), timesheet.ExpectedHoursSpent);
+            Assert.Equal(TimeSpan.FromHours(8 + 8 + 8), timesheet.ExpectedHoursSpent);
         }
 
         [Fact]

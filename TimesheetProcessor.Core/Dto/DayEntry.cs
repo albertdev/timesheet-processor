@@ -57,7 +57,7 @@ namespace TimesheetProcessor.Core.Dto
         }
 
         /// <summary>
-        /// A full work week is expected to contain 39 hours. Friday is just 7 hours, Saturday and Sunday are expected to be free.
+        /// A full work week is expected to contain 40 hours with 5 days of 8 hours, Saturday and Sunday are expected to be free.
         /// </summary>
         public TimeSpan ExpectedHoursSpent
         {
@@ -68,8 +68,8 @@ namespace TimesheetProcessor.Core.Dto
                     case DayOfWeek.Saturday:
                     case DayOfWeek.Sunday:
                         return TimeSpan.Zero;
-                    case DayOfWeek.Friday:
-                        return TimeSpan.FromHours(7);
+                    /*case DayOfWeek.Friday:
+                        return TimeSpan.FromHours(7);*/
                     default:
                         return TimeSpan.FromHours(8);
                 }
