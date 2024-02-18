@@ -11,17 +11,25 @@ namespace TimesheetProcessor.Core.Dto
 
         private TagDetails(TagDetails original)
         {
-            Tag1 = original.Tag1;
-            Tag2 = original.Tag2;
+            TagIds = original.TagIds;
             Notes = original.Notes;
         }
 
-        public string Tag1 { get; set; }
-        public string Tag2 { get; set; }
+        /// <summary>
+        /// ManicTime supports tagging a block of time with a hieararchy of tags.
+        /// </summary>
+        public string[] TagIds { get; set; }
         public string Notes { get; set; }
         public IList<TimeEntry> Entries { get; set; } = new List<TimeEntry>();
 
-        public string TagId => String.IsNullOrWhiteSpace(Tag2) ? Tag1 : $"{Tag1}, {Tag2}";
+        /// <summary>
+        /// Combine separate Tag Ids into easier to handle string.
+        /// </summary>
+        public string TagId => String.Join(", ", TagIds);
+        /// <summary>
+        /// First tag. This should always be a non-empty string.
+        /// </summary>
+        public string Tag1 => TagIds[0];
 
         public TimeSpan TotalTimeSpent
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using TimesheetProcessor.Core.Dto;
 
 namespace TimesheetProcessor.Core.Tests
@@ -54,11 +55,11 @@ namespace TimesheetProcessor.Core.Tests
                 }
                 else
                 {
-                    int separatorIndex = tag.IndexOf(",", StringComparison.InvariantCulture);
+                    //int separatorIndex = tag.IndexOf(",", StringComparison.InvariantCulture);
+                    var tagIds = tag.Split(',').Select(x => x.TrimStart()).ToArray();
                     tagDetails = new TagDetails
                     {
-                        Tag1 = separatorIndex == -1 ? tag : tag.Substring(0, separatorIndex),
-                        Tag2 = separatorIndex == -1 ? null : tag.Substring(separatorIndex + 1).TrimStart()
+                        TagIds = tagIds
                     };
                     _builder._tagMap[tagDetails.TagId] = tagDetails;
                 }

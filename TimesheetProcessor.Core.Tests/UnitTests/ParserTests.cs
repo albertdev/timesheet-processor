@@ -69,5 +69,19 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
                 Assert.Throws<Exception>(() => parser.ParseTimesheet(stream));
             }
         }
+
+        [Fact]
+        public void TestParseFullWeekWithSingleTags()
+        {
+            Timesheet test;
+            ManicTimeParser parser = new ManicTimeParser();
+            using (var stream = new StreamReader("Testfiles/Timesheet_nonpad_singletag.tsv"))
+            {
+                test = parser.ParseTimesheet(stream);
+            }
+            Assert.Equal(7, test.Days.Count);
+            Assert.Equal(9, test.Tags.Count);
+            Assert.Equal(new TimeSpan(30, 43, 20), test.TotalTimeSpent);
+        }
     }
 }

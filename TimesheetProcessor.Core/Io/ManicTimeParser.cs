@@ -42,28 +42,38 @@ namespace TimesheetProcessor.Core.Io
                 csv.Read();
                 csv.ReadHeader();
 
-                var orderedDays = ValidateAndParseDayEntries(csv);
+                int numberOfTags = csv.Context.HeaderRecord.Count(x => x.StartsWith("Tag "));
+                var orderedDays = ValidateAndParseDayEntries(csv, numberOfTags);
                 var numberOfDays = orderedDays.Length;
                 var hasNotes = csv.Context.HeaderRecord.Last().Equals("Notes");
                 sheet.Days = orderedDays.ToList();
+                // Skip over 'Tag X' columns
+                int columnsToSkip = numberOfTags;
 
                 while (ReadNextLine(csv))
                 {
                     // Last row is just a totals count. We can calculate this from scratch later
-                    if (csv.GetField("Tag 1").Equals("Total") && String.IsNullOrWhiteSpace(csv.GetField("Tag 2")))
+                    if (csv.GetField("Tag 1").Equals("Total"))
                     {
                         break;
                     }
+
+                    var tagIds = Enumerable.Range(1, numberOfTags).Select(i => csv.GetField("Tag " + i)).ToArray();
+                    // Chop off '#' symbol if placed at the start of the 'Tag 1' column
+                    if (tagIds[0].StartsWith("#"))
+                    {
+                        tagIds[0] = tagIds[0].Substring(1);
+                    }
+
                     var tagDetails = new TagDetails
                     {
-                        Tag1 = csv.GetField("Tag 1"),
-                        Tag2 = csv.GetField("Tag 2"),
+                        TagIds = tagIds,
                         Notes = hasNotes ? csv.GetField("Notes") : String.Empty
                     };
+
                     for (int i = 0; i < numberOfDays; i++)
                     {
-                        // Skip over 'Tag 1' and 'Tag 2' column
-                        var timeEntry = ValidateAndParseTimeEntry(orderedDays[i], tagDetails, csv.GetField(i + 2));
+                        var timeEntry = ValidateAndParseTimeEntry(csv, orderedDays[i], tagDetails, csv.GetField(i + columnsToSkip));
                         orderedDays[i].Entries.Add(timeEntry);
                         tagDetails.Entries.Add(timeEntry);
                     }
@@ -86,32 +96,34 @@ namespace TimesheetProcessor.Core.Io
             }
         }
 
-        private DayEntry[] ValidateAndParseDayEntries(CsvReader csv)
+        private DayEntry[] ValidateAndParseDayEntries(CsvReader csv, int numberOfTags)
         {
             var header = csv.Context.HeaderRecord;
-            var lastHeader = header.Length - 1;
 
-            if (header.Length < 3 || !_ignoreMissingNotesColumn && header.Length < 4)
+            if (header.Length < 3)
             {
-                throw new Exception("Invalid number of columns in header");
+                throw new Exception("Invalid number of columns in header. Was there any day data?");
             }
 
-            if (! "Tag 1".Equals(header[0]) || ! "Tag 2".Equals(header[1])
+            var lastHeader = header.Length - 1;
+
+            if ( ! Enumerable.Range(0, numberOfTags).All(i => header[i].StartsWith("Tag "))
                     || _ignoreMissingNotesColumn && ! "Total".Equals(header[lastHeader])
                     || !_ignoreMissingNotesColumn && ! "Notes".Equals(header[lastHeader]) && ! "Total".Equals(header[lastHeader - 1]))
             {
                 throw new Exception("Header row not as expected");
             }
 
+            int columnsToSkip = numberOfTags;
             var hasNotes = header.Last().Equals("Notes");
-            // Ignore first two columns 'Tag 1' and 'Tag 2', then ignore last two columns 'Total' and 'Notes' (if present)
-            int numberOfDays = header.Length - (hasNotes ? 4 : 3);
+            // Ignore the tag columns, then ignore last two columns 'Total' and 'Notes' (if present)
+            int numberOfDays = header.Length - (hasNotes ? numberOfTags + 2 : numberOfTags + 1);
             var result = new DayEntry[numberOfDays];
 
             for (int i = 0; i < numberOfDays; i++)
             {
                 // Skips over first two columns
-                var day = header[i + 2];
+                var day = header[i + columnsToSkip];
                 DateTime parsedDay;
                 try
                 {
@@ -134,7 +146,7 @@ namespace TimesheetProcessor.Core.Io
             return result;
         }
 
-        private static TimeEntry ValidateAndParseTimeEntry(DayEntry day, TagDetails tag, string timeSpent)
+        private static TimeEntry ValidateAndParseTimeEntry(CsvReader csv, DayEntry day, TagDetails tag, string timeSpent)
         {
             bool readOnly = false;
             if (timeSpent.StartsWith("#"))
@@ -149,7 +161,8 @@ namespace TimesheetProcessor.Core.Io
             }
             catch (Exception e)
             {
-                throw new FormatException($"Time entry for {day} in tag {tag.TagId} is not valid: value [{timeSpent}] could not be parsed", e);
+                int lineNumber = csv.Context.RawRow;
+                throw new FormatException($"Time entry for {day} on line {lineNumber} is not valid: value [{timeSpent}] could not be parsed", e);
             }
 
             return new TimeEntry(timeValue, day, tag, readOnly);

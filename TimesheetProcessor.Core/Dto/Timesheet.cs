@@ -31,6 +31,11 @@ namespace TimesheetProcessor.Core.Dto
 
         public IList<DayEntry> Days { get; internal set; } = new List<DayEntry>();
         public IList<TagDetails> Tags { get; private set; } = new List<TagDetails>();
+
+        /// <summary>
+        /// Indicates how deeply nested tags are used in this timesheet.
+        /// </summary>
+        public int TagLevels => Tags.Select(x => x.TagIds.Length).Max();
         
         public TimeSpan TotalTimeSpent {
             get {
