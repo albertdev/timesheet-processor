@@ -32,7 +32,7 @@ namespace TimesheetProcessor.Core.Filter
                     {
                         continue;
                     }
-                    var entry = day.Entries.FirstOrDefault(x => x.Tag.TagId == subtractedEntry.Tag.TagId)
+                    var entry = day.Entries.FirstOrDefault(x => x.Tag.Equals(subtractedEntry.Tag))
                                           ?? throw new Exception($"{day} is missing entry {subtractedEntry.Tag.TagId}");
 
                     long ticks = entry.TimeSpent.Ticks - subtractedEntry.TimeSpent.Ticks;

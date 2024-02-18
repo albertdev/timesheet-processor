@@ -17,12 +17,12 @@ namespace TimesheetProcessor.Core.Dto
             
             // Clone above has cloned the time entries. The tag details still need to be cloned and the cross-references need to be rebuilt.
             Tags = original.Tags.Select(x => x.Clone()).Cast<TagDetails>().ToList();
-            var tagMap = Tags.ToDictionary(x => x.TagId, y => y);
+            var tagMap = Tags.ToDictionary(x => x, y => y);
             foreach (var day in Days)
             {
                 foreach (var entry in day.Entries)
                 {
-                    var newTag = tagMap[entry.Tag.TagId];
+                    var newTag = tagMap[entry.Tag];
                     entry.Tag = newTag;
                     newTag.Entries.Add(entry);
                 }

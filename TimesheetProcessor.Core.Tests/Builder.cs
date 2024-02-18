@@ -9,7 +9,7 @@ namespace TimesheetProcessor.Core.Tests
     public class Builder
     {
         private Timesheet _sheet = new Timesheet();
-        private Dictionary<string, TagDetails> _tagMap = new Dictionary<string, TagDetails>();
+        private IDictionary<TagDetails, TagDetails> _tags = new Dictionary<TagDetails, TagDetails>();
         
         public Builder()
         {
@@ -36,32 +36,34 @@ namespace TimesheetProcessor.Core.Tests
                 _builder._sheet.Days.Add(_dayEntry);
             }
 
-            public EntryBuilder AddEntry(string tag, string timeSpent)
+            public EntryBuilder AddEntry(string tag, string timeSpent, string notes = "")
             {
-                return AddEntry(tag, timeSpent, false);
+                return AddEntry(tag, timeSpent, notes, false);
             }
 
-            public EntryBuilder AddReadOnlyEntry(string tag, string timeSpent)
+            public EntryBuilder AddReadOnlyEntry(string tag, string timeSpent, string notes = "")
             {
-                return AddEntry(tag, timeSpent, true);
+                return AddEntry(tag, timeSpent, notes, true);
             }
 
-            private EntryBuilder AddEntry(string tag, string timeSpent, bool readOnly)
+            private EntryBuilder AddEntry(string tag, string timeSpent, string notes, bool readOnly)
             {
-                TagDetails tagDetails;
-                if (_builder._tagMap.ContainsKey(tag))
+                //int separatorIndex = tag.IndexOf(",", StringComparison.InvariantCulture);
+                var tagIds = tag.Split(',').Select(x => x.TrimStart()).ToArray();
+                var tagDetails = new TagDetails
                 {
-                    tagDetails = _builder._tagMap[tag];
+                    TagIds = tagIds,
+                    Notes = notes
+                };
+                if (_builder._tags.ContainsKey(tagDetails))
+                {
+                    // Use existing entry with similar hash
+                    tagDetails = _builder._tags[tagDetails];
                 }
                 else
                 {
-                    //int separatorIndex = tag.IndexOf(",", StringComparison.InvariantCulture);
-                    var tagIds = tag.Split(',').Select(x => x.TrimStart()).ToArray();
-                    tagDetails = new TagDetails
-                    {
-                        TagIds = tagIds
-                    };
-                    _builder._tagMap[tagDetails.TagId] = tagDetails;
+                    
+                    _builder._tags[tagDetails] = tagDetails;
                 }
                 var timeSpentParsed = TimeSpan.ParseExact(timeSpent, "h\\:m\\:s", CultureInfo.InvariantCulture);
                 var entry = new TimeEntry(timeSpentParsed, _dayEntry, tagDetails, readOnly);
@@ -77,7 +79,7 @@ namespace TimesheetProcessor.Core.Tests
 
             public Timesheet ToTimesheet()
             {
-                foreach (var tag in _builder._tagMap.Values)
+                foreach (var tag in _builder._tags.Values)
                 {
                     _builder._sheet.Tags.Add(tag);
                 }

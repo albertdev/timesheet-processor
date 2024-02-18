@@ -58,8 +58,8 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
                 test = parser.ParseTimesheet(stream);
             }
             Assert.Equal(7, test.Days.Count);
-            Assert.Equal(9, test.Tags.Count);
-            Assert.Equal(new TimeSpan(30, 43, 20), test.TotalTimeSpent);
+            Assert.Equal(10, test.Tags.Count);
+            Assert.Equal(new TimeSpan(38, 43, 20), test.TotalTimeSpent);
         }
     }
 }

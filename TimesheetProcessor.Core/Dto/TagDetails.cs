@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TimesheetProcessor.Core.Dto
 {
@@ -57,6 +58,42 @@ namespace TimesheetProcessor.Core.Dto
         public override string ToString()
         {
             return TagId;
+        }
+
+        protected bool Equals(TagDetails other)
+        {
+            return TagIds.SequenceEqual(other.TagIds) && string.Equals(Notes, other.Notes, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TagDetails)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int value = 397;
+                for (var i = 0; i < this.TagIds.Length; i++)
+                {
+                    value ^= this.TagIds[i].GetHashCode();
+                }
+                return value ^ (Notes != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(Notes) : 0);
+            }
+        }
+
+        public static bool operator ==(TagDetails left, TagDetails right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(TagDetails left, TagDetails right)
+        {
+            return !Equals(left, right);
         }
     }
 }
