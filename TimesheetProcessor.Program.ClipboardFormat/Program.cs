@@ -10,7 +10,7 @@ namespace TimesheetProcessor.Program.ClipboardFormat
 {
     /// <summary>
     /// This program reads a timesheet from the clipboard (in hour:minutes:second notation), check its syntax and then sum up all the totals.
-    /// Optionally it can round to the nearest 6 minute interval or add zeroes for all the missing days.
+    /// Optionally it can round to the nearest 15 minute interval or add zeroes for all the missing days.
     /// </summary>
     internal class Program
     {
@@ -37,7 +37,7 @@ namespace TimesheetProcessor.Program.ClipboardFormat
             Timesheet result = sheet;
             if (args.Any(x => x.Equals("--round", StringComparison.InvariantCultureIgnoreCase)))
             {
-                result = new RoundToNearestDeciHourFilter().Filter(result);
+                result = new RoundToNearestQuarterHourFilter().Filter(result);
             }
 
             if (args.Any(x => x.Equals("--week", StringComparison.InvariantCultureIgnoreCase)))

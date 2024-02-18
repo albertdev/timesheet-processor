@@ -34,10 +34,10 @@ namespace TimesheetProcessor.Program.ClipboardInput
             // First distribute the "Elastic" time code across every writable entry in the sheet. This will form the basis of the result.
             var workingSheet = new ElasticFilter().Filter(inputSheet);
 
-            var roundedUp = new RoundToNearestDeciHourFilter().Filter(workingSheet);
+            var rounded = new RoundToNearestQuarterHourFilter().Filter(workingSheet);
 
-            double expectedHoursToScale = (roundedUp.ExpectedHoursSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
-            double actualHoursToScale = (roundedUp.TotalTimeSpent - roundedUp.TotalTimeSpentWithReadonlyFlag).TotalHours;
+            double expectedHoursToScale = (rounded.ExpectedHoursSpent - rounded.TotalTimeSpentWithReadonlyFlag).TotalHours;
+            double actualHoursToScale = (rounded.TotalTimeSpent - rounded.TotalTimeSpentWithReadonlyFlag).TotalHours;
             var scalingFactor = expectedHoursToScale / actualHoursToScale;
 
             // Do not scale timesheet if there's only a one-hour difference (or even overtime). By that point it's better to review things manually.
@@ -50,8 +50,8 @@ namespace TimesheetProcessor.Program.ClipboardInput
                 result = new ScaleTimesheetFilter(scalingFactor).Filter(workingSheet);
             }
 
-            // Even if we don't scale we can better make sure the timesheet is rounded to 6 minute blocks
-            result = new RoundToNearestDeciHourFilter().Filter(result);
+            // Even if we don't scale we can better make sure the timesheet is quantized to time blocks
+            result = new RoundToNearestQuarterHourFilter().Filter(result);
 
             if (shouldScale)
             {
