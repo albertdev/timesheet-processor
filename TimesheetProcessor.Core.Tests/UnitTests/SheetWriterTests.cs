@@ -47,7 +47,7 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
             string result;
             using (var writer = new StringWriter())
             {
-                new ManicTimesheetWriter().WriteTimesheet(timesheet, writer, true);
+                new ManicTimesheetWriter().WriteTimesheet(timesheet, writer);
                 result = writer.ToString();
             }
 

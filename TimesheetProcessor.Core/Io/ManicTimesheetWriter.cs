@@ -18,9 +18,9 @@ namespace TimesheetProcessor.Core.Io
             _timesheetWriter = new ConfigurableTimesheetWriter(Configure, ConvertTime);
         }
 
-        public void WriteTimesheet(Timesheet sheet, TextWriter writer, bool includeNotes)
+        public void WriteTimesheet(Timesheet sheet, TextWriter writer)
         {
-            _timesheetWriter.WriteTimesheet(sheet, writer, includeNotes);
+            _timesheetWriter.WriteTimesheet(sheet, writer, true);
         }
 
         private void Configure(CsvConfiguration config)

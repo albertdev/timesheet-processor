@@ -98,7 +98,7 @@ namespace TimesheetProcessor.Program.ClipboardInput
             using (var writer = new StreamWriter(Path.Combine(outputFolder, $"{outputFilesPrefix}sample.csv")))
             {
                 // Write (potentially corrected) timesheet once more, but now in format for import in external time tracking tool
-                new ManicTimesheetWriter().WriteTimesheet(result, writer, true);
+                new ManicTimesheetWriter().WriteTimesheet(result, writer);
             }
 
             Console.Out.WriteLine("Processing complete");

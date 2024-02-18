@@ -25,28 +25,6 @@ namespace TimesheetProcessor.Core.Tests.UnitTests
         }
 
         [Fact]
-        public void TestParseFullWeekWithoutNotes()
-        {
-            Timesheet test;
-            var parser = new ManicTimeParser();
-            Assert.ThrowsAny<Exception>(() =>
-            {
-                using (var stream = new StreamReader("Testfiles/Timesheet_nonpad_missingnotes.tsv"))
-                {
-                    test = parser.ParseTimesheet(stream);
-                }
-            });
-            parser = new ManicTimeParser(true);
-            using (var stream = new StreamReader("Testfiles/Timesheet_nonpad_missingnotes.tsv"))
-            {
-                test = parser.ParseTimesheet(stream);
-            }
-            Assert.Equal(7, test.Days.Count);
-            Assert.Equal(9, test.Tags.Count);
-            Assert.Equal(new TimeSpan(30, 43, 20), test.TotalTimeSpent);
-        }
-
-        [Fact]
         public void TestParseHalfWeek()
         {
             Timesheet test;

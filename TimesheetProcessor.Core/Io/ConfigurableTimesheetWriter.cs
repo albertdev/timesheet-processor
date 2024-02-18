@@ -35,7 +35,7 @@ namespace TimesheetProcessor.Core.Io
             using (var csv = new CsvWriter(writer, csvConfig, true))
             {
                 var numberOfTags = sheet.TagLevels;
-                WriteHeader(sheet, csv, numberOfTags, includeNotes);
+                WriteHeader(sheet, csv, numberOfTags);
                 csv.NextRecord();
                 
                 foreach (var tag in sheet.Tags)
@@ -45,6 +45,8 @@ namespace TimesheetProcessor.Core.Io
                     {
                         csv.WriteField(i < tagIds.Length ? tagIds[i] : "");
                     }
+                    csv.WriteField(tag.Notes);
+
                     // This makes sure that something gets written when the tag details entries are somehow incorrect
                     foreach (var day in sheet.Days)
                     {
@@ -59,10 +61,6 @@ namespace TimesheetProcessor.Core.Io
                         }
                     }
                     csv.WriteField(_timeConverter(tag.TotalTimeSpent));
-                    if (includeNotes)
-                    {
-                        csv.WriteField(tag.Notes);
-                    }
                     csv.NextRecord();
                 }
                 csv.WriteField("Total");
@@ -73,30 +71,22 @@ namespace TimesheetProcessor.Core.Io
                 }
                 csv.WriteField(_timeConverter(sheet.TotalTimeSpent));
 
-                if (includeNotes)
-                {
-                    csv.WriteField("");
-                }
-
                 csv.Flush();
             }
         }
 
-        private static void WriteHeader(Timesheet sheet, CsvWriter writer, int numberOfTags, bool includeNotes)
+        private static void WriteHeader(Timesheet sheet, CsvWriter writer, int numberOfTags)
         {
             for (int i = 0; i < numberOfTags; i++)
             {
                 writer.WriteField($"Tag {i + 1}");
             }
+            writer.WriteField("Notes");
             foreach (var day in sheet.Days)
             {
                 writer.WriteField(day.Day.ToShortDateString());
             }
             writer.WriteField("Total");
-            if (includeNotes)
-            {
-                writer.WriteField("Notes");
-            }
         }
     }
 }

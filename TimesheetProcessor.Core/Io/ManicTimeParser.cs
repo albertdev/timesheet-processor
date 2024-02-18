@@ -18,16 +18,11 @@ namespace TimesheetProcessor.Core.Io
     /// </summary>
     public class ManicTimeParser
     {
-        private readonly bool _ignoreMissingNotesColumn;
-
         /// <summary>
         /// Only constructor to use.
         /// </summary>
-        /// <param name="ignoreMissingNotesColumn">Optional bool defaulting to <code>false</code>. If set to true then the last 'Notes' column is allowed
-        /// to be left out of the input file. An empty notes column is never treated as an error.</param>
-        public ManicTimeParser(bool ignoreMissingNotesColumn = false)
+        public ManicTimeParser()
         {
-            _ignoreMissingNotesColumn = ignoreMissingNotesColumn;
         }
 
         public Timesheet ParseTimesheet(TextReader input)
@@ -45,10 +40,10 @@ namespace TimesheetProcessor.Core.Io
                 int numberOfTags = csv.Context.HeaderRecord.Count(x => x.StartsWith("Tag "));
                 var orderedDays = ValidateAndParseDayEntries(csv, numberOfTags);
                 var numberOfDays = orderedDays.Length;
-                var hasNotes = csv.Context.HeaderRecord.Last().Equals("Notes");
+                var hasTag2 = csv.Context.HeaderRecord.Any(x => x == "Tag 2");
                 sheet.Days = orderedDays.ToList();
-                // Skip over 'Tag X' columns
-                int columnsToSkip = numberOfTags;
+                // Skip over 'Tag X' columns and 'Notes' column
+                int columnsToSkip = numberOfTags + 1;
 
                 while (ReadNextLine(csv))
                 {
@@ -68,7 +63,7 @@ namespace TimesheetProcessor.Core.Io
                     var tagDetails = new TagDetails
                     {
                         TagIds = tagIds,
-                        Notes = hasNotes ? csv.GetField("Notes") : String.Empty
+                        Notes = csv.GetField("Notes")
                     };
 
                     for (int i = 0; i < numberOfDays; i++)
@@ -106,18 +101,19 @@ namespace TimesheetProcessor.Core.Io
             }
 
             var lastHeader = header.Length - 1;
+            // Notes column should appear after tags
+            int notesColumn = numberOfTags;
+            int columnsToSkip = numberOfTags + 1;
 
             if ( ! Enumerable.Range(0, numberOfTags).All(i => header[i].StartsWith("Tag "))
-                    || _ignoreMissingNotesColumn && ! "Total".Equals(header[lastHeader])
-                    || !_ignoreMissingNotesColumn && ! "Notes".Equals(header[lastHeader]) && ! "Total".Equals(header[lastHeader - 1]))
+                || ! "Notes".Equals(header[notesColumn])
+                || ! "Total".Equals(header[lastHeader]))
             {
                 throw new Exception("Header row not as expected");
             }
 
-            int columnsToSkip = numberOfTags;
-            var hasNotes = header.Last().Equals("Notes");
-            // Ignore the tag columns, then ignore last two columns 'Total' and 'Notes' (if present)
-            int numberOfDays = header.Length - (hasNotes ? numberOfTags + 2 : numberOfTags + 1);
+            // Subtract first tag columns, the 'Notes' column and last column 'Total'
+            int numberOfDays = header.Length - (numberOfTags + 2);
             var result = new DayEntry[numberOfDays];
 
             for (int i = 0; i < numberOfDays; i++)
@@ -153,6 +149,11 @@ namespace TimesheetProcessor.Core.Io
             {
                 readOnly = true;
                 timeSpent = timeSpent.Substring(1);
+            }
+            // Entire line marked as readonly
+            else if (csv.GetField("Tag 1").StartsWith("#"))
+            {
+                readOnly = true;
             }
             TimeSpan timeValue;
             try
