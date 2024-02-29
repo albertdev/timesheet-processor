@@ -5,6 +5,9 @@ using TimesheetProcessor.Core.Dto;
 
 namespace TimesheetProcessor.Core.Io
 {
+    /// <summary>
+    /// Prints a timesheet with hours:minutes:seconds notation and tab characters as delimiter.
+    /// </summary>
     public class TabBasedTimesheetWriter
     {
         private readonly ConfigurableTimesheetWriter _timesheetWriter;

@@ -79,17 +79,22 @@ namespace TimesheetProcessor.Program.ClipboardInput
 
                 new TabBasedTimesheetWriter().WriteTimesheet(result, writer, true);
 
+                writer.WriteLine();
+                writer.WriteLine();
+
+                new PrettyPrintTimesheetWriter().WriteTimesheet(result, writer);
+
                 if (shouldScale)
                 {
                     // Include 'difference' timesheet to have an idea what corrections are suggested in ManicTime. Includes negative values
                     writer.WriteLine();
                     writer.WriteLine();
-                    new TabBasedTimesheetWriter().WriteTimesheet(difference, writer, false);
+                    new PrettyPrintTimesheetWriter().WriteTimesheet(difference, writer);
 
                     // Write 'difference' timesheet once more but now turn negative values into zero timespans
                     writer.WriteLine();
                     writer.WriteLine();
-                    new TabBasedTimesheetWriter().WriteTimesheet(new ClipToZeroFilter().Filter(difference), writer, false);
+                    new PrettyPrintTimesheetWriter().WriteTimesheet(new ClipToZeroFilter().Filter(difference), writer);
                 }
 
                 writer.Flush();
