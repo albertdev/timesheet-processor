@@ -69,7 +69,14 @@ namespace TimesheetProcessor.Core.Io
                     {
                         int width = columnWidths[i];
                         string content = cell.Contents[l];
-                        writer.Write(content.PadRight(width));
+                        if (cell.PadLeft)
+                        {
+                            writer.Write(content.PadLeft(width));
+                        }
+                        else
+                        {
+                            writer.Write(content.PadRight(width));
+                        }
                     }
                     else
                     {
@@ -111,14 +118,14 @@ namespace TimesheetProcessor.Core.Io
                     var entry = tag.Entries.FirstOrDefault(x => x.Day.Equals(day));
                     if (entry == null)
                     {
-                        rowContents.Add(new TableCell(ConvertTime(TimeSpan.Zero)));
+                        rowContents.Add(new TableCell(ConvertTime(TimeSpan.Zero), true));
                     }
                     else
                     {
-                        rowContents.Add(new TableCell(ConvertTime(entry.TimeSpent)));
+                        rowContents.Add(new TableCell(ConvertTime(entry.TimeSpent), true));
                     }
                 }
-                rowContents.Add(new TableCell(ConvertTime(tag.TotalTimeSpent)));
+                rowContents.Add(new TableCell(ConvertTime(tag.TotalTimeSpent), true));
                 allRows.Add(new TableRow(rowContents));
             }
 
@@ -130,8 +137,8 @@ namespace TimesheetProcessor.Core.Io
             totalsContents.AddRange(Enumerable.Range(0, numberOfTags - 1).Select(i => new TableCell("")));
             totalsContents.Add(new TableCell(""));
             totalsContents.AddRange(Enumerable.Range(0, sheet.Days.Count)
-                .Select(i => new TableCell(ConvertTime(sheet.Days[i].TotalTimeSpent))));
-            totalsContents.Add(new TableCell(ConvertTime(sheet.TotalTimeSpent)));
+                .Select(i => new TableCell(ConvertTime(sheet.Days[i].TotalTimeSpent), true)));
+            totalsContents.Add(new TableCell(ConvertTime(sheet.TotalTimeSpent), true));
             totals = new TableRow(totalsContents);
 
             columnWidths = CalculateColumnWidths(header, lines, totals);
@@ -187,9 +194,14 @@ namespace TimesheetProcessor.Core.Io
             /// Number of lines in this cell.
             /// </summary>
             public int Height { get; }
+            /// <summary>
+            /// Whether the cell contents are right-aligned, in which case there will be spaces added on the left.
+            /// </summary>
+            public bool PadLeft { get; }
 
-            public TableCell(string contents)
+            public TableCell(string contents, bool padLeft = false)
             {
+                PadLeft = padLeft;
                 string[] lines = contents.Replace("\r\n", "\n").Split('\n');
 
                 Height = lines.Length;
