@@ -64,6 +64,11 @@ namespace TimesheetProcessor.Core.Io
                     csv.NextRecord();
                 }
                 csv.WriteField("Total");
+                // First tag column is filled, write an empty cell for each next tag
+                for (int i = 1; i < numberOfTags; i++)
+                {
+                    csv.WriteField("");
+                }
                 csv.WriteField("");
                 foreach (var day in sheet.Days)
                 {
